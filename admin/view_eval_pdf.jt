@@ -1,0 +1,27 @@
+<?php
+if (!ini_get('display_errors')) {
+    ini_set('display_errors', '1');
+}
+require_once('../includes/html2pdf_v4.03/html2pdf.class.php');
+
+if(isset($_GET['eval_id']) && is_numeric($_GET['eval_id'])){
+  $iEvaluationId = $_GET['eval_id'];
+  $html2pdf = new HTML2PDF('P', 'A4', 'en');
+  
+  $username = 'dev';
+  $password = 'bradf0rd1911';
+   
+  $context = stream_context_create(array(
+      'http' => array(
+          'header'  => "Authorization: Basic " . base64_encode("$username:$password")
+      )
+  ));
+  $content = file_get_contents('http://jamestoothill.co.uk/dev/eval/admin/view_eval.php?skip_auth=1HGstGtw8272891H&remove_formatting=true&eval_id='.$iEvaluationId, false, $context);
+  //echo $content;
+  $html2pdf->WriteHTML($content);
+  $html2pdf->Output('exemple.pdf');
+} else {
+  header('Location: '.$strLocation.'admin/');
+}
+
+?>
